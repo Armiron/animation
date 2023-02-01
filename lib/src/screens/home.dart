@@ -18,10 +18,16 @@ class HomeSate extends State<Home> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    catAnimation = Tween(begin: 0.0, end: 100.0)
+    catAnimation = Tween(begin: -35.0, end: -80.0)
         .animate(CurvedAnimation(parent: catController, curve: Curves.easeIn));
+  }
 
-    catController.forward();
+  onTap() {
+    if (catController.status == AnimationStatus.completed) {
+      catController.reverse();
+    } else if (catController.status == AnimationStatus.dismissed) {
+      catController.forward();
+    }
   }
 
   Widget build(context) {
@@ -29,20 +35,41 @@ class HomeSate extends State<Home> with TickerProviderStateMixin {
       appBar: AppBar(
         title: Text('Animation!'),
       ),
-      body: buildAnimation(),
+      body: GestureDetector(
+        onTap: onTap,
+        child: Center(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              buildCatAnimation(),
+              buildBox(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  Widget buildAnimation() {
+  Widget buildCatAnimation() {
     return AnimatedBuilder(
       animation: catAnimation,
       builder: (context, child) {
-        return Container(
-          child: child,
-          margin: EdgeInsets.only(top: catAnimation.value),
+        return Positioned(
+          top: catAnimation.value,
+          right: 0.0,
+          left: 0.0,
+          child: child!,
         );
       },
       child: Cat(), //it gets given to the builder
+    );
+  }
+
+  Widget buildBox() {
+    return Container(
+      height: 200.0,
+      width: 200.0,
+      color: Colors.brown,
     );
   }
 }
